@@ -1,0 +1,29 @@
+/*------------------------------------------------------------------------------
+ * Programmer:
+ * Date:
+ * Name: hw1.cpp
+ * Description:
+ -------------------------------------------------------------------------------*/
+
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+using namespace std;
+
+
+int getOverallBest(int[], int);
+
+int main () {
+	/*TODO: Declare the variables used in the program*/
+
+	/*TODO: Initialize the best scores array to all -1*/
+
+	/*TODO: Implement program logic*/
+
+	cout << "Thanks for playing! Bye bye." << endl;
+
+    return 0;
+}
+

@@ -1,0 +1,142 @@
+/*-----------------------------------------------------------------------------
+ * Programmers: Ethan Bachinski & Eric Mensen
+ * Name: hw2.c
+ * Description: .
+ * To compile (using provided makefile) on linux:
+ * > make
+ * To load program onto robot (once usb programmer plugged in and robot on):
+ * > make program
+ ----------------------------------------------------------------------------*/
+
+#include <pololu/3pi.h>   /* allow use of 3pi robot functions */
+#include <avr/pgmspace.h> /* allow use of program space */
+#include <stdlib.h>       /* for random() functions */
+
+
+/* function prototype for battery check */
+void bat_check( void );
+/* function prototype for menuSelect*/
+int menuSelect (void);
+/* function prototype for readUserInput*/
+void readUserInput (int, int, int *);
+/* function prototype for getOverallBest*/
+int getOverallBest(int[], int);
+
+/*Other suggested functions (optional):
+getUserScore
+playGame
+*/
+
+int main( void )
+{
+	/* perform battery check before starting the game */
+	bat_check();
+
+	/* obtain random number between 0-9 */
+        int val = random() % 10;
+
+
+    while (1)
+	{
+        clear(); // clear the LCD
+        lcd_goto_xy(0,0);
+        print("PRESS B");
+        lcd_goto_xy(0,1);
+        print("TO PLAY");
+        wait_for_button_press(BUTTON_B);
+
+        long seed = 0;
+        while(button_is_pressed(BUTTON_B)) /* while button not released */
+        seed++;
+        srandom(seed);
+
+
+        clear();
+        lcd_goto_xy(0,0);
+       	print("Coming");
+        lcd_goto_xy(0,1);
+        print("soon....");
+        delay_ms(2000);
+
+    }
+}
+int menuSelect (void)
+{
+    //Not sure what code to put here
+}
+void readUserInput (int, int, int *)
+{
+    //Not sure what code to put here either
+}
+int getOverallBest(int[], int)
+{
+    //Oh and not sure what code to put here as well
+}
+/*-----------------------------------------------------------------------------
+ * Function name: bat_check
+ * Description: This function checks the voltage on the batteries and
+ *              displays a message on the LCD until the user presses B.
+ *              The message on the first line cycles between the following:
+ *              Bat Chk       [-> descriptive message]
+ *              xxxxmV        [-> the battery voltage]
+ *              Okay/Replace  [-> whether the batteries should be replaced]
+ ----------------------------------------------------------------------------*/
+void bat_check( void )
+{
+    int firstLineType = 0; /* what should be displayed on line 1 */
+                           /*  0-19: Bat Chk */
+                           /* 20-39: xxxxmV  */
+                           /* 40-59: Okay/Replace */
+    int bat = 0;           /* last read battery voltage */
+
+    /* wait for user to press button B */
+    while(!button_is_pressed(BUTTON_B))
+    {
+        /* clear the lcd */
+        clear();
+
+        /* FIRST LINE */
+        /* set lcd position to beginning of first line */
+        lcd_goto_xy(0,0);
+
+        /* for first line, alternate between displaying:
+         Bat Check
+         xxxxmV
+         Okay/Replace */
+
+        if (firstLineType < 20)
+        {
+            print("Bat Chk");
+        }
+        else if (firstLineType < 40)
+        {
+            bat = read_battery_millivolts();
+            print_long(bat);
+            print("mV");
+        }
+        else if (firstLineType < 60)
+        {
+            if (bat >= 4500)
+            {
+                print("Okay"); /* okay */
+            }
+            else
+            {
+                print("Replace"); /* replace */
+            }
+        }
+        firstLineType++;
+        firstLineType = firstLineType % 60;
+
+        /* SECOND LINE */
+        /* set lcd position to beginning of second line */
+        lcd_goto_xy(0,1);
+        print("Press B");
+
+        /* small delay */
+        delay_ms(50);
+    }
+
+    /* once pressed, wait a little bit */
+    delay_ms(500);
+}

@@ -1,0 +1,5 @@
+This folder contains an executable for a sample solution of Homework 3. You are not able to view the code for the solution. 
+This is provided so that you can see how we intend your solution to work when run on a linux computer.
+
+To run this code on a linux computer, cd to this folder in the terminal, and type ./HW3 maze.txt
+Press Ctrl+C to stop the program.

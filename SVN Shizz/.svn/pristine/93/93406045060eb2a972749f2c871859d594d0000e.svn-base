@@ -1,0 +1,24 @@
+/*---------------------------------------------------------------
+ * Programmer: YOUR NAME HERE
+ * Name: main.cpp
+ * Description: This file contains the implementation of the
+ *              mini-assignment associated with lecture 10.
+ *              The program must:
+ *              - contain/call a function that uses simulated
+ *                pass-by-reference to modify the value of two
+ *                input integers
+ *              - contain/call a function that modifies an
+ *                input array, but so that the input parameter
+ *                is declared using a pointer
+ ---------------------------------------------------------------*/
+#include <iostream>
+#include <stdio.h>
+#include <stdlib.h>
+using namespace std;
+
+int main( void )
+{
+
+
+    return 0;
+}

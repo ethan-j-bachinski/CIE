@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1453828795 source:c:\users\ethan\documents\cie\svn shizz\ebachinski\class\lec03ma\main.cpp
+	<stdlib.h>
+	<time.h>
+	<iostream>
+

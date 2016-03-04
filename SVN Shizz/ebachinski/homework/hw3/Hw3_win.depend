@@ -1,0 +1,33 @@
+# depslib dependency file v1.0
+1457058483 source:c:\users\ethan\documents\cie\svn shizz\ebachinski\homework\hw3\hw3.cpp
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	"useCurses.h"
+	"robotModel.h"
+	"maze.h"
+
+1456950386 c:\users\ethan\documents\cie\svn shizz\ebachinski\homework\hw3\usecurses.h
+	<ncurses.h>
+	"pdcurses/curses.h"
+
+1456950386 c:\users\ethan\documents\cie\svn shizz\ebachinski\homework\hw3\pdcurses\curses.h
+	<stdarg.h>
+	<stddef.h>
+	<stdio.h>
+	<wchar.h>
+
+1457054472 c:\users\ethan\documents\cie\svn shizz\ebachinski\homework\hw3\robotmodel.h
+
+1456950386 c:\users\ethan\documents\cie\svn shizz\ebachinski\homework\hw3\maze.h
+	"robotModel.h"
+
+1456950386 source:c:\users\ethan\documents\cie\svn shizz\ebachinski\homework\hw3\maze.cpp
+	"maze.h"
+	<stdio.h>
+	<stdlib.h>
+	"useCurses.h"
+
+1456950386 source:c:\users\ethan\documents\cie\svn shizz\ebachinski\homework\hw3\robotmodel.cpp
+	"robotModel.h"
+

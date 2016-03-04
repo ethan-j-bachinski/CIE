@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1454360329 source:c:\users\ethan\documents\cie\svn shizz\ebachinski\class\lec06ma\main.cpp
+	<iostream>
+	<stdio.h>
+	<stdlib.h>
+

@@ -1,0 +1,201 @@
+/*------------------------------------------------------------------------------
+ * Programmer: Ethan Bachinski
+ * Name: hw3.c
+ * Description: TODO add high level pseudo code & description
+ -------------------------------------------------------------------------------*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "useCurses.h"
+
+#include "robotModel.h"
+#include "maze.h"
+
+
+/* function prototype for initializing maze and robot from command line arguments */
+int initMazeAndRobotFromCLArgs(int argc, char *argv[], Maze *maze, RobotModel *robot);
+int copyAndSimplify(char *inturns, char *outturns, int numturns);
+int simplifyTurns(char *turns, int *numTurns);
+
+
+// TO DO: ADD ANY ADDITIONAL FUNCTION PROTOTYPES
+
+int main( int argc, char *argv[] )
+{
+
+    // Maze and relatred variables
+    Maze maze;              /* structure to store maze */
+    RobotModel robot;       /* structure to model robot (current position + direction)*/
+    char input;
+
+    //TODO: DECLARE ADDITIONAL VARIABLES
+
+
+    /* initialize curses mode */
+    initscr();
+
+    printw("\n Resize screen\n");
+    printw("\n Then press s to start \n");
+    do
+    {
+        scanw("%c", &input);
+    }
+    while (input != 's');
+
+
+
+
+
+   /* if successfully have initialized robot and maze, solve maze */
+        if (initMazeAndRobotFromCLArgs(argc, argv, &maze, &robot))
+        {
+            /* display maze and obtain desired end point */
+            clear();
+            printMazePlusCurrentPos(maze, robot);
+            printw("Welcome to the robot mail delivery system.\n");
+            printw("What address do you want the robot deliver your mail?");
+            int BinF=blackInFront(maze, robot);
+            int BtoL=blackToLeft(maze, robot);
+            int BtoR=blackToRight(maze, robot);
+            int onB=onBlack(maze, robot);
+            while(BinF==1)
+            {
+               moveStraight(&robot);
+            }
+
+
+
+
+
+
+            getch();
+        }
+
+    endwin();
+
+    return 0;
+}
+
+
+
+
+/*-----------------------------------------------------------------------------
+ * Function name: initMazeAndRobotFromCLArgs
+ * Description: This function uses the specified command-line arguments to
+ *              initialize the given Maze and RobotModel variables. If the
+ *              incorrect number of command-line arguments is passed, an
+ *              error message is displayed (and 0 is returned).
+ * Inputs: argc = int = number of command-line arguments
+ *         argv = array of strings = command-line arguments, with argv[1]
+ *                                   being the input file name
+ *         m = Maze * = pointer to Maze structure that should be initialized
+ *                      in this function (passed by simulated reference)
+ *         robot = RobotModel * = pointer to RobotModel that should be
+ *                                initialized in this function (passed by
+ *                                simulated reference)
+ * Outputs: m = Maze * = pointer to initialized Maze
+ *          robot = RobotModel * = pointer to initialized RobotModel
+ *          int = 1 if initialization successful
+ *                0 if error encountered
+ ----------------------------------------------------------------------------*/
+int initMazeAndRobotFromCLArgs(int argc, char *argv[], Maze *maze, RobotModel *robot)
+{
+    int success = 1;
+    char *inputFileName;    /* input file name containing maze */
+    /* obtain input filename from command line */
+    if (argc >= 2) /* require at least two command-line arguments */
+    {
+        inputFileName = argv[1];
+    }
+    else
+    {
+        /* when incorrect number of command-line arguments are passed,
+           print message indicating proper usage of program  */
+        printw("Usage: %s inputFileName.txt\n", argv[0]);
+        success = 0;
+    }
+
+    if (success)
+    {
+        success = readMaze(inputFileName, maze, robot);
+    }
+
+    return success;
+}
+
+
+/*-----------------------------------------------------------------------------
+ * Function name: copyAndSimplify
+ * Description: This function copies the inturns array with numturns entries to
+ *              outturns array and simplifies it by deleting the visits to the
+ *              intermediate addresses.
+ * Inputs: *inturns: pointer to turn array that have to be copied & simplified
+ *         *outturns: pointer to the simplified array of turns
+ *         numturns: number of turns that will be copied and simplified
+ * Output  optturns: length of the copied array
+ ----------------------------------------------------------------------------*/
+int copyAndSimplify(char *inturns, char *outturns, int numturns)
+    {
+        int i;
+        int optturns = 0;
+        for (i=0; i<numturns; i++) {
+            outturns[optturns] = inturns[i];
+            optturns++;
+            simplifyTurns(outturns, &optturns);
+        }
+        return(optturns);
+    }
+
+
+/* note: based on code provided in maze-solve.c
+ provided by 3pi */
+int simplifyTurns(char *turns, int *numTurns)
+{
+    int done = 1;
+    int n = *numTurns;
+    if (n >= 3 && turns[n-2] == 'U')
+    {
+        int total_angle = 0;
+        int i;
+        for (i=1; i<=3; i++)
+        {
+            switch(turns[n-i])
+            {
+                case 'R':
+                    total_angle += 90;
+                    break;
+                case 'L':
+                    total_angle += 270;
+                    break;
+                case 'U':
+                    total_angle += 180;
+                    break;
+            }
+        }
+
+        total_angle = total_angle % 360;
+
+        switch(total_angle)
+        {
+            case 0:
+                turns[n-3] = 'S';
+                break;
+            case 90:
+                turns[n-3] = 'R';
+                break;
+            case 180:
+                turns[n-3] = 'U';
+                done = 0;
+                break;
+            case 270:
+                turns[n-3] = 'L';
+                break;
+        }
+
+        *numTurns = *numTurns - 2;
+     }
+    return(done);
+
+}
+
+

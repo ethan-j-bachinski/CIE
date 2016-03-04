@@ -1,0 +1,32 @@
+# depslib dependency file v1.0
+1456852669 source:c:\users\ethan\documents\cie\svn shizz\ebachinski\class\lec18ma\main.cpp
+	<stdio.h>
+	<stdlib.h>
+	"useCurses.h"
+	"robotModel.h"
+	"maze.h"
+
+1456777854 c:\users\ethan\documents\cie\svn shizz\ebachinski\class\lec18ma\usecurses.h
+	<ncurses.h>
+	"pdcurses/curses.h"
+
+1456777854 c:\users\ethan\documents\cie\svn shizz\ebachinski\class\lec18ma\pdcurses\curses.h
+	<stdarg.h>
+	<stddef.h>
+	<stdio.h>
+	<wchar.h>
+
+1456777855 c:\users\ethan\documents\cie\svn shizz\ebachinski\class\lec18ma\robotmodel.h
+
+1456777854 c:\users\ethan\documents\cie\svn shizz\ebachinski\class\lec18ma\maze.h
+	"robotModel.h"
+
+1456852704 source:c:\users\ethan\documents\cie\svn shizz\ebachinski\class\lec18ma\maze.cpp
+	"maze.h"
+	<stdio.h>
+	<stdlib.h>
+	"useCurses.h"
+
+1456777854 source:c:\users\ethan\documents\cie\svn shizz\ebachinski\class\lec18ma\robotmodel.cpp
+	"robotModel.h"
+
