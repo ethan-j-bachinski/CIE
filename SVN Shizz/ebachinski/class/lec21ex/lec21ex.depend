@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1457386216 source:c:\users\ethan\documents\cie\svn shizz\ebachinski\class\lec21ex\main.cpp
+	<stdio.h>
+	<stdlib.h>
+	<iostream>
+

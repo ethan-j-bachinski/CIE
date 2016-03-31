@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1459199124 source:c:\users\ethan\documents\cie\svn shizz\ebachinski\class\lec26ma\main.cpp
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<iostream>
+	<iomanip>
+

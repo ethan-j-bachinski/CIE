@@ -1,0 +1,399 @@
+/*------------------------------------------------------------------------------
+ * Programmer: Ethan Bachinski
+ * Name: hw3.c
+ * Description: TODO add high level pseudo code & description
+ -------------------------------------------------------------------------------*/
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "useCurses.h"
+
+#include "robotModel.h"
+#include "maze.h"
+
+
+/* function prototype for initializing maze and robot from command line arguments */
+int initMazeAndRobotFromCLArgs(int argc, char *argv[], Maze *maze, RobotModel *robot);
+int copyAndSimplify(char *inturns, char *outturns, int numturns);
+int simplifyTurns(char *turns, int *numTurns);
+//My new function prototypes to use in my code
+//Homebase function prototype
+int homeBase(Maze maze,RobotModel robot);
+//sort_array function prototype
+void sort_array(int *arr,int arrsize);
+int main( int argc, char *argv[] )
+{
+    // Maze and related variables
+    Maze maze;              /* structure to store maze */
+    RobotModel robot;       /* structure to model robot (current position + direction)*/
+    char input;
+    int turn=0;
+    char addarr[300] = {NULL};
+    int Numberofaddresses=0;
+    int stop=0;
+    int moves=0;
+    int addressnumber=-1;
+    int *delivery;
+    //mailbox structure to store addresses, the number of total moves and a pointer
+    struct mailbox
+                {
+                    int address;
+                    int turn;
+                    struct mailbox *nextPtr;
+                };
+                //defining a pointer to my structure
+                typedef struct mailbox *MailboxPtr;
+/********************************Part 1*****************************************************************/
+    /* initialize curses mode */
+    initscr();
+    printw("\n Resize screen\n");
+    printw("\n Then press s to start \n");
+    do
+    {
+        scanw("%c", &input);
+    }
+    while (input != 's');
+   /* if successfully have initialized robot and maze, solve maze */
+        if (initMazeAndRobotFromCLArgs(argc, argv, &maze, &robot))
+        {
+            //declaring startPtr & currentPtr from my typedef structure pointer
+            MailboxPtr startPtr=NULL;
+            MailboxPtr currentPtr=NULL;
+            //allocating memory to my startPtr
+            startPtr=(MailboxPtr) malloc(sizeof(MailboxPtr));
+            //equating currentPtr to startPtr
+            currentPtr=startPtr;
+            int done = 0;
+            while(!done)
+            {
+                //variables that set the colors the robot sees to either 0 or 1
+                int BinF=blackInFront(maze, robot);
+                int BtoL=blackToLeft(maze, robot);
+                int BtoR=blackToRight(maze, robot);
+                int onB=onBlack(maze, robot);
+                //clears the screen
+                clear();
+                //prints the maze and position of the robot
+                printMazePlusCurrentPos(maze, robot);
+                //if the robot is in the homebase moves out of homebase into the maze
+                if(homeBase(maze, robot)==1)
+                {
+                    //function to move the robot forward one space
+                    moveStraight(&robot);
+                    //counts the number of moves the robot makes
+                    moves++;
+
+                }
+                else
+                {
+                    //checks to see if the robot is not in homebase
+                    while(homeBase(maze,robot)!=1)
+                    {
+                        clear();
+                        printMazePlusCurrentPos(maze, robot);
+                        int BinF=blackInFront(maze, robot);
+                        int BtoL=blackToLeft(maze, robot);
+                        int BtoR=blackToRight(maze, robot);
+                        int onB=onBlack(maze, robot);
+                        //print statements to let the user know what to do to move the robot through the maze
+                        printw("Lets learn the maze! Press and Hold spacebar to do so\n");
+                        //prints the incremented number of moves by the robot
+                        printw("Steps: %d\n",moves);
+                        //increments the uturns that the robot makes which are the mail stops available
+                        printw("Total mail stop options %d\n", stop);
+                        //sets the spacebar to move the robot
+                        char c=getch();
+                        if(c!=' ')continue;
+                        {
+                            //if statement to tell the robot that their is a left turn available and do that first
+                            if(BtoL==1&&onB==1)
+                            {
+                                //function to tell the robot to turn left
+                                turnLeft(&robot);
+                                //increments the number of turns that the robot makes
+                                turn++;
+                                //adds the turn "L" to the array of the turns made by the robot
+                                addarr[turn]='L';
+                            }
+                            else if(BinF==1&&onB==1)
+                            {
+                                //function to move the robot straight
+                                moveStraight(&robot);
+                            }
+                            else if(BtoR==1&&onB==1)
+                            {
+                                //fucntion to tell the robot to turn right
+                                turnRight(&robot);
+                                //increments the turns
+                                turn++;
+                                //adds an "R" to the address array
+                                addarr[turn]='R';
+                            }
+                            else if(BtoR==0&&BtoL==0&&BinF==0&&onB==1)
+                            {
+                                //function to turn the robot around
+                                uTurn(&robot);
+                                //adds a "U" to the address array
+                                addarr[turn]='U';
+                                //increments the turns
+                                turn++;
+                                //current pointer arrow operator that points the address to the stop
+                                currentPtr->address=stop;
+                                //increments the number of stops
+                                stop++;
+                                //current pointer arrow operator that points to the moves address
+                                currentPtr->turn=turn;
+                                //printw("\n Address: %d \n",currentPtr->address);
+                                //printw("\n Steps: %d \n",currentPtr->moves);
+                                //allocates memory for the address of the nextPtr
+                                currentPtr->nextPtr=(MailboxPtr) malloc(sizeof(MailboxPtr));
+                                currentPtr=currentPtr->nextPtr;
+                                getch();
+                            }
+                            moves++;
+                        }
+                    }
+                    done=1;
+                    clear();
+                    printMazePlusCurrentPos(maze, robot);
+                    currentPtr=startPtr;
+                    /*for(int i=0;i<stop;i++)
+                    {
+                        printw("\n Address: %d\n",currentPtr->address);
+                        printw("Steps: %d",currentPtr->moves);
+                        currentPtr=currentPtr->nextPtr;
+                    }*/
+                }
+                getch();
+            }
+        }
+/***********************************Part 2**********************************************************/
+        //allocates memory for the delivery array
+        delivery=(int*)malloc(stop*sizeof(int));
+        //sets all variables in the array to -1
+        for(int i=0;i<stop;i++)
+        {
+            delivery[i]=-1;
+        }
+                clear();
+                printMazePlusCurrentPos(maze, robot);
+                printw("\n Maze has been learned! \n");
+                printw("\n What addresses would you like to deliver? \n");
+                printw("\n You can choose from address 1 to address %d \n",stop);
+                printw("\n Press -1 when finished. \n");
+                int done=0;
+                while(done!=-1)
+                {
+                    //allows the user to enter the addresses they want to enter to deliver to
+                    scanw(" %d \n",&addressnumber);
+                    //when -1 is entered ends the addresses they want to deliver to are done
+                    if(addressnumber==-1)
+                    {
+                        done=-1;
+                    }
+                    else
+                    {
+                        //checks to see if the user enters a valid address
+                        if(addressnumber>stop-1||addressnumber<-1)
+                        {
+                            clear();
+                            printMazePlusCurrentPos(maze, robot);
+                            printw("\n Not a valid address. Enter another one. \n");
+                            printw("\n What addresses would you like to deliver? \n");
+                            printw("\n You can choose from address 0 to address %d ",stop-1);
+                            printw("\n Press -1 when finished. ");
+                        }
+                        //sets all the values of the array equal to the addresses entered by the user
+                        else
+                        {
+                            delivery[Numberofaddresses]=addressnumber;
+                            Numberofaddresses++;
+                            //printw("\n%d\n",Numberofaddresses);
+                        }
+                    }
+                }
+                    printw("Unsorted Addresses:");
+                    for(int i=0;i<Numberofaddresses;i++)
+                        {
+                            printw(" %d",delivery[i]);
+                        }
+
+
+                //function that puts the addresses entered in order
+                    sort_array(delivery,Numberofaddresses);
+                        printw("\n Addresses: ");
+                        //prints the addresses to be delivered in order
+                        for(int i=0;i<Numberofaddresses;i++)
+                        {
+                            printw(" %d",delivery[i]);
+                        }
+
+                    getch();
+/*************************************************************Part 3*********************************/
+
+    endwin();
+    return 0;
+}
+
+/**************************************
+    Function name: sort_array
+    Description: This function will sort the addresses that are entered into the array and puts them in ascending order.
+    Inputs: *arr=delivery array
+            arrsize=Numberofaddresses
+**************************************/
+void sort_array(int *arr,int arrsize)
+{
+    int i,j,temp;
+
+    for(i=1;i<=arrsize;i++)
+    {
+        j=i;
+
+        while(j>0&&arr[j]<arr[j-1])
+        {
+            /* Swap! */
+            temp=arr[j];
+            arr[j]=arr[j-1];
+            arr[j-1]=temp;
+            j--;
+        }
+    }
+}
+/******************************************
+    Function Name: homeBase
+    Description: This function determines whether or not the robot is in the homebase.
+    Inputs:maze=Maze maze
+            robot=RobotModel robot
+    Outputs: returns a 1 if the robot is in the maze and returns a 0 if the robot is out in the maze
+******************************************/
+int homeBase(Maze maze,RobotModel robot)
+{
+            if(blackInFront(maze, robot)==1&&blackToLeft(maze, robot)==1&&onBlack(maze, robot)==1&&blackToRight(maze,robot)==1)
+            {
+                return 1;
+            }
+            else
+            {
+                return 0;
+            }
+}
+/*-----------------------------------------------------------------------------
+ * Function name: initMazeAndRobotFromCLArgs
+ * Description: This function uses the specified command-line arguments to
+ *              initialize the given Maze and RobotModel variables. If the
+ *              incorrect number of command-line arguments is passed, an
+ *              error message is displayed (and 0 is returned).
+ * Inputs: argc = int = number of command-line arguments
+ *         argv = array of strings = command-line arguments, with argv[1]
+ *                                   being the input file name
+ *         m = Maze * = pointer to Maze structure that should be initialized
+ *                      in this function (passed by simulated reference)
+ *         robot = RobotModel * = pointer to RobotModel that should be
+ *                                initialized in this function (passed by
+ *                                simulated reference)
+ * Outputs: m = Maze * = pointer to initialized Maze
+ *          robot = RobotModel * = pointer to initialized RobotModel
+ *          int = 1 if initialization successful
+ *                0 if error encountered
+ ----------------------------------------------------------------------------*/
+int initMazeAndRobotFromCLArgs(int argc, char *argv[], Maze *maze, RobotModel *robot)
+{
+    int success = 1;
+    char *inputFileName;    /* input file name containing maze */
+    /* obtain input filename from command line */
+    if (argc >= 2) /* require at least two command-line arguments */
+    {
+        inputFileName = argv[1];
+    }
+    else
+    {
+        /* when incorrect number of command-line arguments are passed,
+           print message indicating proper usage of program  */
+        printw("Usage: %s inputFileName.txt\n", argv[0]);
+        success = 0;
+    }
+
+    if (success)
+    {
+        success = readMaze(inputFileName, maze, robot);
+    }
+
+    return success;
+}
+
+
+/*-----------------------------------------------------------------------------
+ * Function name: copyAndSimplify
+ * Description: This function copies the inturns array with numturns entries to
+ *              outturns array and simplifies it by deleting the visits to the
+ *              intermediate addresses.
+ * Inputs: *inturns: pointer to turn array that have to be copied & simplified
+ *         *outturns: pointer to the simplified array of turns
+ *         numturns: number of turns that will be copied and simplified
+ * Output  optturns: length of the copied array
+ ----------------------------------------------------------------------------*/
+int copyAndSimplify(char *inturns, char *outturns, int numturns)
+    {
+        int i;
+        int optturns = 0;
+        for (i=0; i<numturns; i++) {
+            outturns[optturns] = inturns[i];
+            optturns++;
+            simplifyTurns(outturns, &optturns);
+        }
+        return(optturns);
+    }
+
+
+/* note: based on code provided in maze-solve.c
+ provided by 3pi */
+int simplifyTurns(char *turns, int *numTurns)
+{
+    int done = 1;
+    int n = *numTurns;
+    if (n >= 3 && turns[n-2] == 'U')
+    {
+        int total_angle = 0;
+        int i;
+        for (i=1; i<=3; i++)
+        {
+            switch(turns[n-i])
+            {
+                case 'R':
+                    total_angle += 90;
+                    break;
+                case 'L':
+                    total_angle += 270;
+                    break;
+                case 'U':
+                    total_angle += 180;
+                    break;
+            }
+        }
+
+        total_angle = total_angle % 360;
+
+        switch(total_angle)
+        {
+            case 0:
+                turns[n-3] = 'S';
+                break;
+            case 90:
+                turns[n-3] = 'R';
+                break;
+            case 180:
+                turns[n-3] = 'U';
+                done = 0;
+                break;
+            case 270:
+                turns[n-3] = 'L';
+                break;
+        }
+
+        *numTurns = *numTurns - 2;
+     }
+    return(done);
+
+}
+
+

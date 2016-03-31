@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1459276197 source:c:\users\ethan\documents\cie\svn shizz\groupb19\hw4\testturnlist.c
+	<iostream>
+	<string.h>
+	"turnList.h"
+
+1459202926 c:\users\ethan\documents\cie\svn shizz\groupb19\hw4\turnlist.h
+
+1459303493 source:c:\users\ethan\documents\cie\svn shizz\groupb19\hw4\turnlist.c
+	"turnList.h"
+	<stddef.h>
+	<stdlib.h>
+

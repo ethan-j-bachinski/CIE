@@ -1,0 +1,5 @@
+This folder contains the files necessary for you to run a homework 4 sample solution on your robot. You are not able to view the code for the solution. This is provided so that you can see how we intend your solution to work when run on the robot.
+
+To run this code on your robot, cd to this folder in the terminal, make sure your robot is plugged into the computer and turned on.  
+
+Then, run the "make program" command, without quotes.  Your robot will be programmed and you can try out the solution on your robot.
